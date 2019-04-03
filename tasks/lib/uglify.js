@@ -10,9 +10,9 @@
 
 // External libs.
 var path = require('path');
-var UglifyJS = require('uglify-js');
+var UglifyJS = require('uglify-es');
 var uriPath = require('uri-path');
-var domprops = require('uglify-js/tools/domprops');
+var domprops = require('uglify-es/tools/domprops');
 
 // Converts \r\n to \n
 function normalizeLf(string) {
@@ -29,6 +29,12 @@ function toCache(cache, key) {
     };
   }
   return cache[key];
+}
+
+function push_uniq(array, el) {
+  if (array.indexOf(el) < 0) {
+    return array.push(el);
+  }
 }
 
 exports.init = function(grunt) {
@@ -96,7 +102,7 @@ exports.init = function(grunt) {
         }
         if (options.reserveDOMProperties) {
           domprops.forEach(function(name) {
-            UglifyJS.push_uniq(minifyOptions.mangle.properties.reserved, name);
+            push_uniq(minifyOptions.mangle.properties.reserved, name);
           });
         }
       }
@@ -106,12 +112,12 @@ exports.init = function(grunt) {
             var obj = JSON.parse(grunt.file.read(file));
             if (minifyOptions.mangle && obj.vars) {
               obj.vars.forEach(function(name) {
-                UglifyJS.push_uniq(minifyOptions.mangle.reserved, name);
+                push_uniq(minifyOptions.mangle.reserved, name);
               });
             }
             if (minifyOptions.mangle.properties && obj.props) {
               obj.props.forEach(function(name) {
-                UglifyJS.push_uniq(minifyOptions.mangle.properties.reserved, name);
+                push_uniq(minifyOptions.mangle.properties.reserved, name);
               });
             }
           } catch (ex) {
